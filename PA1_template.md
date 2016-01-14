@@ -1,9 +1,4 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output: 
-  html_document:
-    keep_md: yes
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
@@ -12,7 +7,8 @@ output:
 3. Download file into Download Directory and then unzip the same.
 4. Create a data frame using the downloaded data file.
 
-``` {r}
+
+```r
 # 
 # Initialize Variables
 #
@@ -46,14 +42,16 @@ activitydata <- read.csv(datafile,
 Following the download and unzip, we will clean the data. Specifically, it will Convert the Date & Time fields.
 
 
-```{r echo=TRUE} 
+
+```r
 activitydata$date    <- as.POSIXct(strptime(activitydata$date, "%Y-%m-%d"),tz="")
 activitydata$time    <- sprintf("%04d", activitydata$interval)                 
 activitydata$time    <- as.POSIXct(activitydata$time, "%H%M",tz="")
 ```
 
 ## What is mean total number of steps taken per day?
-```{r echo=TRUE} 
+
+```r
 #
 # 1. Make a histogram of the total number of steps taken each day
 # 
@@ -75,12 +73,11 @@ total_steps_by_date <- aggregate(list(total_steps = steps_by_date$total_steps),
                                  by=list(date = steps_by_date$date),
                                  FUN=sum,
                                  na.rm=TRUE)
-
 ```
 
 The Histogram for the Total number of steps, and also mean and Median looks as follows:
-```{r echo=TRUE} 
 
+```r
 hist(total_steps_by_date$total_steps, 
      breaks = 20, 
      col = "red", 
@@ -98,12 +95,26 @@ legend(x="topright",
        legend=c(paste("Mean: ",steps_by_date_mean),
                 paste("Median: ",steps_by_date_median)), 
        col=c("blue","green"), bty="n", lwd=3)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)\
+
+```r
 # dev.copy(png, file="plot1.png", width=480, height=480)
 
 paste("The Mean steps taken every day is : ", steps_by_date_mean)
-paste("The Mean steps taken every day is : ", steps_by_date_median )
+```
 
+```
+## [1] "The Mean steps taken every day is :  9354.22950819672"
+```
+
+```r
+paste("The Mean steps taken every day is : ", steps_by_date_median )
+```
+
+```
+## [1] "The Mean steps taken every day is :  10395"
 ```
 
 
@@ -111,7 +122,8 @@ paste("The Mean steps taken every day is : ", steps_by_date_median )
 
 The time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) follows :
 
-```{r echo=TRUE} 
+
+```r
 avg_steps_by_timeint <- aggregate(list(avg_steps = activitydata$steps),
                                   by=list(interval = activitydata$interval),
                                   FUN=mean,
@@ -133,13 +145,18 @@ abline(v=avgsteptm, col="red", lwd=3)
 legend(x="topright", 
        legend=c(paste("Max Steps : ", avgsteps , " @ ", avgsteptm)),
        col=c("blue"), bty="n", lwd=3)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)\
+
+```r
 # dev.copy(png, file="plot2.png", width=480, height=480)
 ```
 
 
-```{r echo=FALSE} 
-paste("The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? is at : ", avgsteptm)
+
+```
+## [1] "The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? is at :  835"
 ```
 
 ## Imputing missing values
@@ -147,8 +164,13 @@ paste("The 5-minute interval, on average across all the days in the dataset, con
 #### Objective: 
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-``` {r echo=TRUE}
+
+```r
 paste("Total # rows with missing Values is ", sum(is.na(activitydata$steps)))   # No of NA Rows
+```
+
+```
+## [1] "Total # rows with missing Values is  2304"
 ```
 
 #### Objective: 
@@ -160,7 +182,8 @@ Devise a strategy for filling in all of the missing values in the dataset. The s
 - Create a new dataset that is equal to the original dataset but with the missing data filled in.
 - Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r echo=TRUE}
+
+```r
 activity_imputed <- merge(activitydata,
                           avg_steps_by_timeint,
                           by_x="interval")
@@ -191,7 +214,11 @@ legend(x="topright",
        legend=c(paste("Mean   (Amp): ",ampsteps_by_date_mean),
                 paste("Median (Amp): ",ampsteps_by_date_median)), 
        col=c("blue","red"), bty="n", lwd=3)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)\
+
+```r
 # dev.copy(png, file="plot3.png", width=480, height=480)
 ```
 
@@ -204,8 +231,16 @@ legend(x="topright",
 - Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
 
-```{r echo=TRUE}
+
+```r
 library(plyr)
+```
+
+```
+## Warning: package 'plyr' was built under R version 3.2.3
+```
+
+```r
 library(lattice)
 
 # Creating New Dataset activity_imputed with a factoring (column) for weekday and weekend.
@@ -227,9 +262,8 @@ xyplot(steps ~ interval | Weekend, activity_imputed,
        ylab = "Number of Steps", 
        xlab = "Interval", 
        main = "Time Series for Weekend and Weekday Activity Patterns")
-
 ```
 
-```{r echo=FALSE}
-# dev.copy(png, file="plot4.png", width=480, height=480)
-```
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)\
+
+
